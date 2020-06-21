@@ -1,0 +1,10 @@
+language: python
+before_install:
+- tar xvf secrets.tar
+- ssh-keyscan -H $HOSTNAME >> ~/.ssh/known_hosts
+install:
+- pip install j2cli j2cli[yaml]
+script:
+- j2 ragnarok.rsc.j2 secrets.yml -o ragnarok.rsc
+- scp -i $PRIVATE_KEY_FILE ragnarok.rsc $HOSTNAME:/
+- ssh -i $PRIVATE_KEY_FILE $HOSTNAME import file=ragnarok.rsc

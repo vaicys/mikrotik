@@ -1,0 +1,144 @@
+# model = RouterBOARD 962UiGS-5HacT2HnT
+# serial number = 6F1206AD3889
+
+####################################################################################################
+# ROUTER
+####################################################################################################
+
+/system identity
+  set name=ragnarok
+/system clock
+  set time-zone-name=Europe/Zurich
+#/ip address
+#  add interface=ether1 address=192.168.100.2/24
+/ip route
+  remove [ find where static ]
+  add gateway=192.168.100.1
+/ip dns
+  set servers=8.8.8.8,8.8.4.4
+/ip cloud
+  set ddns-enabled=yes
+/ip service
+  set telnet disabled=yes
+  set ftp disabled=yes
+  set api disabled=yes
+  set api-ssl disabled=yes
+/ip ssh
+  set always-allow-password-login=no strong-crypto=yes
+
+####################################################################################################
+# WIRELESS
+####################################################################################################
+
+/interface bridge
+  remove [ find ]
+  add name=bridge
+
+/interface bridge port
+  remove [ find ]
+  add bridge=bridge interface=ether1
+  add bridge=bridge interface=wlan1
+  add bridge=bridge interface=wlan2
+
+/interface wireless
+  remove [ find where interface-type=virtual ]
+  set [ find default-name=wlan1 ] \
+    disabled=no ssid=ragnarok mode=ap-bridge security-profile=default \
+    band=2ghz-b/g/n channel-width=20/40mhz-XX frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+  set [ find default-name=wlan2 ] \
+    disabled=no ssid=ragnarok5 mode=ap-bridge security-profile=default \
+    band=5ghz-a/n/ac channel-width=20/40/80mhz-Ceee frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+
+/interface wireless security-profiles
+  set [ find default=yes ] \
+    authentication-types=wpa2-psk mode=dynamic-keys \
+    wpa2-pre-shared-key={{ wifi_password }}
+
+####################################################################################################
+# DHCP
+####################################################################################################
+
+/ip pool
+  remove [ find ]
+#  add name=dhcp-pool ranges=192.168.100.100-192.168.100.254
+/ip dhcp-server
+  remove [ find ]
+#  add disabled=yes name=default address-pool=dhcp-pool interface=bridge
+/ip dhcp-server network
+  remove [ find ]
+#  add address=192.168.100.0/24 comment=defconf dns-server=8.8.8.8,8.8.4.4 \
+#    gateway=192.168.100.1 netmask=24
+/ip dhcp-client
+  remove [ find ]
+#  add interface=ether1
+
+####################################################################################################
+# FIREWALL
+####################################################################################################
+
+/interface list
+  remove [ find where !builtin ]
+  add name=LAN
+/interface list member
+  remove [ find ]
+  add list=LAN interface=bridge
+  add list=LAN interface=ether1
+
+/ip firewall filter
+  remove [ find where !dynamic ]
+  add chain=input comment="[INPUT] accept: state related" \
+    connection-state=established,related,untracked action=accept
+  add chain=input comment="[INPUT] drop: state invalid" \
+    connection-state=invalid action=drop
+  add chain=input comment="[INPUT] accept: protocol ICMP" \
+    protocol=icmp action=accept
+  add chain=input comment="[INPUT] accept: ssh" \
+    protocol=tcp dst-port=22 action=accept
+#  add chain=input comment="[INPUT] accept: pptp vpn" \
+#    protocol=tcp dst-port=1723 connection-state=new action=accept
+  add chain=input comment="[INPUT] accept: local network" \
+    src-address=192.168.0.0/16 action=accept
+  add chain=input comment="[INPUT] drop" \
+    action=drop
+#  add chain=input comment="[INPUT] drop: not from LAN" \
+#    in-interface-list=!LAN action=drop
+
+  add chain=forward comment="[FORWARD]: fasttrack" \
+    connection-state=established,related action=fasttrack-connection
+  add chain=forward comment="[FORWARD] accept: state related" \
+    connection-state=established,related,untracked action=accept
+  add chain=forward comment="[FORWARD] drop: state invalid" \
+    connection-state=invalid action=drop
+#  add chain=forward comment="[FORWARD] drop: from WAN not DSTNATed"
+#    connection-nat-state=!dstnat connection-state=new in-interface-list=WAN  action=drop
+
+/ip firewall nat
+  remove [ find ]
+#  add chain=srcnat comment="[SRCNAT]: masquerade"\
+#    out-interface-list=WAN action=masquerade
+#  add chain=srcnat comment="[SRCNAT]: hair pin" \
+#    src-address=192.168.100.0/24 dst-address=192.168.100.0/24
+#    out-interface-list=LAN action=masquerade
+{#
+{% for rule in port_forwarding %}
+  add chain=dstnat comment="{{ rule.comment }}" \
+    protocol={{ rule.protocol }} dst-port={{ rule.port }} \
+    to-addresses={{ rule.address }} to-ports={{ rule.port }} \
+    action=dst-nat
+{% endfor %}
+#}
+
+####################################################################################################
+# ACCESS CONTROL
+####################################################################################################
+
+/ip kid-control
+  remove [ find ]
+  add name=Marija mon=8h-21h tue=8h-21h wed=8h-21h thu=8h-21h fri=8h-21h sat=9h-21h sun=9h-20h
+  add name=Kotryna mon=8h-21h tue=8h-21h wed=8h-21h thu=8h-21h fri=8h-21h sat=9h-21h sun=9h-20h
+/ip kid-control device
+  remove [ find ]
+  add user=Marija name="Marijos iPad" mac-address=78:67:D7:B6:78:B7
+  add user=Kotryna name="Kotrynos iPad" mac-address=78:67:D7:B4:58:18
