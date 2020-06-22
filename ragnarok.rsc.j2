@@ -23,8 +23,12 @@
   set ftp disabled=yes
   set api disabled=yes
   set api-ssl disabled=yes
+  set www disabled=yes
 /ip ssh
   set always-allow-password-login=no strong-crypto=yes forwarding-enabled=local
+/tool mac-server
+  set allowed-interface-list=none
+  ping set enabled=no
 
 ####################################################################################################
 # WIRELESS
@@ -141,3 +145,5 @@
   remove [ find ]
   add user=Marija name="Marijos iPad" mac-address=78:67:D7:B6:78:B7
   add user=Kotryna name="Kotrynos iPad" mac-address=78:67:D7:B4:58:18
+
+:beep
