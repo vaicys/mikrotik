@@ -22,8 +22,12 @@
   set ftp disabled=yes
   set api disabled=yes
   set api-ssl disabled=yes
+  set www disabled=yes
 /ip ssh
   set always-allow-password-login=no strong-crypto=yes forwarding-enabled=local
+/tool mac-server
+  set allowed-interface-list=none
+  ping set enabled=no
 
 ####################################################################################################
 # WIRELESS
@@ -140,3 +144,5 @@
   remove [ find ]
   add user=kid1 name=device1 mac-address=00:00:5E:00:53:01
   add user=kid2 name=device2 mac-address=00:00:5E:00:53:02
+
+:beep
