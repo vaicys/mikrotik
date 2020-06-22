@@ -32,13 +32,13 @@
 
 /interface bridge
   remove [ find ]
-  add name=bridge
+  add name=bridge1
 
 /interface bridge port
   remove [ find ]
-  add bridge=bridge interface=ether1
-  add bridge=bridge interface=wlan1
-  add bridge=bridge interface=wlan2
+  add bridge=bridge1 interface=ether1
+  add bridge=bridge1 interface=wlan1
+  add bridge=bridge1 interface=wlan2
 
 /interface wireless
   remove [ find where interface-type=virtual ]
@@ -62,17 +62,16 @@
 
 /ip pool
   remove [ find ]
-#  add name=dhcp-pool ranges=192.168.100.100-192.168.100.254
+  add name=dhcp-pool ranges=192.168.100.100-192.168.100.254
 /ip dhcp-server
   remove [ find ]
-#  add disabled=yes name=default address-pool=dhcp-pool interface=bridge
+  add name=default address-pool=dhcp-pool interface=bridge1 disabled=no
 /ip dhcp-server network
   remove [ find ]
-#  add address=192.168.100.0/24 comment=defconf dns-server=8.8.8.8,8.8.4.4 \
-#    gateway=192.168.100.1 netmask=24
+  add address=192.168.100.0/24 dns-server=8.8.8.8,8.8.4.4 \
+    gateway=192.168.100.1 netmask=24
 /ip dhcp-client
   remove [ find ]
-#  add interface=ether1
 
 ####################################################################################################
 # FIREWALL
