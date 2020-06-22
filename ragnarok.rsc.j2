@@ -30,6 +30,17 @@
   set allowed-interface-list=none
   ping set enabled=no
 
+/system script
+  remove [ find ]
+  add name=auto-upgrade source="
+    /system package update
+      check-for-updates once
+      :delay 3s;
+      :if ([ get status ] = \"New version is available\") do={ install }"
+/system scheduler
+  remove [ find ]
+  add name=auto-upgrade start-time=12:00:00 interval=7d on-event=auto-update
+
 ####################################################################################################
 # WIRELESS
 ####################################################################################################
