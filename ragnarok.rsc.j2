@@ -49,7 +49,7 @@
 
 /interface wireless
   :local guestWiFiDisabled yes
-  :if ([ :len [ find name=wlan3 disabled=no ] ] > 0) do={ :set guestWiFiDisabled no }
+  :if ([ :len [ find name=wlan3 disabled=no ] ] > 0) do={ :set $guestWiFiDisabled no }
   remove [ find where interface-type=virtual ]
 
   set [ find default-name=wlan1 ] \
@@ -106,18 +106,24 @@
     connection-state=established,related,untracked action=accept
   add chain=input comment="[INPUT] drop: state invalid" \
     connection-state=invalid action=drop
-  add chain=input comment="[INPUT] accept: protocol ICMP" \
-    protocol=icmp action=accept
-  add chain=input comment="[INPUT] accept: ssh" \
-    protocol=tcp dst-port=22 action=accept
-#  add chain=input comment="[INPUT] accept: pptp vpn" \
-#    protocol=tcp dst-port=1723 connection-state=new action=accept
   add chain=input comment="[INPUT] accept: local network" \
     src-address=192.168.0.0/16 action=accept
+
+  add chain=input comment="[INPUT] accept: protocol ICMP" \
+    protocol=icmp action=accept
+
+  add chain=input comment="[INPUT] drop: black listed ssh" \
+    protocol=tcp dst-port=22 connection-state=new \
+    src-address-list=ssh-blacklist action=drop
+  add chain=input comment="[INPUT] mark ssh connection" \
+    protocol=tcp dst-port=22 connection-state=new \
+    address-list=ssh-blacklist address-list-timeout=1m \
+    action=add-src-to-address-list
+  add chain=input comment="[INPUT] accept: ssh" \
+    protocol=tcp dst-port=22 action=accept
+
   add chain=input comment="[INPUT] drop" \
     action=drop
-#  add chain=input comment="[INPUT] drop: not from LAN" \
-#    in-interface-list=!LAN action=drop
 
   add chain=forward comment="[FORWARD]: fasttrack" \
     connection-state=established,related action=fasttrack-connection
