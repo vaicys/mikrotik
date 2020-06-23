@@ -1,9 +1,4 @@
-# model = RouterBOARD 962UiGS-5HacT2HnT
-# serial number = 6F1206AD3889
-
-####################################################################################################
-# ROUTER
-####################################################################################################
+# General router settings
 
 /system identity
   set name=ragnarok
@@ -32,18 +27,42 @@
 
 /system script
   remove [ find ]
-  add name=auto-upgrade source="
-    /system package update
-      check-for-updates once
-      :delay 3s;
-      :if ([ get status ] = \"New version is available\") do={ install }"
+  add name=auto-upgrade source=\
+    "/system package update\r\n\
+    check-for-updates once\r\n\
+    :delay 3s;\r\n\
+    :if ([ get status ] = \"New version is available\") do={ install }"
 /system scheduler
   remove [ find ]
   add name=auto-upgrade start-time=12:00:00 interval=7d on-event=auto-update
 
-####################################################################################################
-# WIRELESS
-####################################################################################################
+# Wireless
+
+/interface wireless security-profiles
+  remove [ find default=no ]
+  set [ find default=yes ] \
+    mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ wifi_password }}"
+  add name=guest \
+    mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ guest_wifi_password }}"
+
+/interface wireless
+  :local guestWiFiDisabled yes
+  :if ([ :len [ find name=wlan3 disabled=no ] ] > 0) do={ :set guestWiFiDisabled no }
+  remove [ find where interface-type=virtual ]
+
+  set [ find default-name=wlan1 ] \
+    disabled=no ssid=ragnarok mode=ap-bridge security-profile=default \
+    band=2ghz-b/g/n channel-width=20/40mhz-XX frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+  set [ find default-name=wlan2 ] \
+    disabled=no ssid=ragnarok5 mode=ap-bridge security-profile=default \
+    band=5ghz-a/n/ac channel-width=20/40/80mhz-Ceee frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+
+  add name=wlan3 master-interface=wlan2 disabled=$guestWiFiDisabled \
+    ssid=perkunas security-profile=guest
 
 /interface bridge
   remove [ find ]
@@ -54,26 +73,9 @@
   add bridge=bridge1 interface=ether1
   add bridge=bridge1 interface=wlan1
   add bridge=bridge1 interface=wlan2
+  add bridge=bridge1 interface=wlan3
 
-/interface wireless
-  remove [ find where interface-type=virtual ]
-  set [ find default-name=wlan1 ] \
-    disabled=no ssid=ragnarok mode=ap-bridge security-profile=default \
-    band=2ghz-b/g/n channel-width=20/40mhz-XX frequency=auto \
-    country=switzerland installation=indoor wps-mode=disabled
-  set [ find default-name=wlan2 ] \
-    disabled=no ssid=ragnarok5 mode=ap-bridge security-profile=default \
-    band=5ghz-a/n/ac channel-width=20/40/80mhz-Ceee frequency=auto \
-    country=switzerland installation=indoor wps-mode=disabled
-
-/interface wireless security-profiles
-  set [ find default=yes ] \
-    authentication-types=wpa2-psk mode=dynamic-keys \
-    wpa2-pre-shared-key={{ wifi_password }}
-
-####################################################################################################
 # DHCP
-####################################################################################################
 
 /ip pool
   remove [ find ]
@@ -88,9 +90,7 @@
 /ip dhcp-client
   remove [ find ]
 
-####################################################################################################
-# FIREWALL
-####################################################################################################
+# Firewall & NAT
 
 /interface list
   remove [ find where !builtin ]
@@ -144,9 +144,7 @@
 {% endfor %}
 #}
 
-####################################################################################################
-# ACCESS CONTROL
-####################################################################################################
+# Access control
 
 /ip kid-control
   remove [ find ]
@@ -156,5 +154,3 @@
   remove [ find ]
   add user=Marija name="Marijos iPad" mac-address=78:67:D7:B6:78:B7
   add user=Kotryna name="Kotrynos iPad" mac-address=78:67:D7:B4:58:18
-
-:beep
