@@ -10,11 +10,26 @@
 /ip firewall filter
   remove [ find where !dynamic ]
 
+  add chain=forward comment="[forward]: fasttrack" \
+    connection-state=established,related action=fasttrack-connection
+  add chain=forward comment="[forward] accept: state related" \
+    connection-state=established,related,untracked action=accept
+  add chain=forward comment="[forward] drop: state invalid" \
+    connection-state=invalid action=drop
+
+  add chain=forward comment="[forward] drop: from 'guest' to 'lan'" \
+    src-address-list=guest-lan dst-address-list=lan action=drop
+  add chain=forward comment="[forward] drop: new !'local' connections to nat network" \
+    connection-nat-state=!dstnat connection-state=new \
+    src-address-list=!local action=drop
+
   add chain=input comment="[input] accept: state related" \
     connection-state=established,related,untracked action=accept
   add chain=input comment="[input] drop: state invalid" \
     connection-state=invalid action=drop
 
+  add chain=input comment="[input] drop: from guest" \
+    src-address-list=guest-lan action=drop
   add chain=input comment="[input] accept: from lan" \
     src-address-list=lan action=accept
   add chain=input comment="[input] accept: icmp" \
@@ -33,26 +48,10 @@
   add chain=input comment="[input] drop" \
     action=drop
 
-  add chain=forward comment="[forward]: fasttrack" \
-    connection-state=established,related action=fasttrack-connection
-  add chain=forward comment="[forward] accept: state related" \
-    connection-state=established,related,untracked action=accept
-  add chain=forward comment="[forward] drop: state invalid" \
-    connection-state=invalid action=drop
-
-  add chain=forward comment="[forward] drop: from 'guest' to 'lan'" \
-    src-address-list=guest-lan dst-address-list=lan action=drop
-  add chain=forward comment="[forward] drop: new !'local' connections to nat network" \
-    connection-nat-state=!dstnat connection-state=new \
-    src-address-list=!local action=drop
-
 /ip firewall nat
   remove [ find ]
-
   add chain=srcnat comment="[srcnat] masquerade: 'guest' network" \
     src-address-list=guest-lan action=masquerade
-  add chain=srcnat comment="[srcnat]: nat hairpin" \
-    src-address-list=local dst-address-list=local action=masquerade
 
 {# {% for rule in port_forwarding %}
   add chain=dstnat comment="{{ rule.comment }}" \
