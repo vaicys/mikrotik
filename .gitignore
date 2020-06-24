@@ -1,2 +1,4 @@
 .idea
 *.rsc
+*.id_rsa
+secrets*

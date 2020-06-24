@@ -1,0 +1,25 @@
+# General router settings
+
+/system identity
+  set name=ragnarok
+
+/system clock
+  set time-zone-name=Europe/Zurich
+
+/ip cloud
+  set ddns-enabled=yes update-time=yes
+
+/ip service
+  set telnet disabled=yes
+  set ftp disabled=yes
+  set api disabled=yes
+  set api-ssl disabled=yes
+  set www disabled=yes
+
+/ip ssh
+  set always-allow-password-login=no strong-crypto=yes forwarding-enabled=local
+
+/tool mac-server
+  set allowed-interface-list=none
+  ping set enabled=no
+  mac-winbox set allowed-interface-list=all

@@ -1,0 +1,11 @@
+/system script
+  remove [ find name=auto-upgrade ]
+  add name=auto-upgrade source=\
+    "/system package update\r\n\
+    check-for-updates once\r\n\
+    :delay 3s;\r\n\
+    :if ([ get status ] = \"New version is available\") do={ install }"
+
+/system scheduler
+  remove [ find name=auto-upgrade ]
+  add name=auto-upgrade start-time=12:00:00 interval=7d on-event=auto-update
