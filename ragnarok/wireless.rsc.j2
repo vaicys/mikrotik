@@ -1,0 +1,18 @@
+# Wireless
+
+/interface wireless
+  :local guestWiFiDisabled yes
+  :if ([ :len [ find name=wlan2a disabled=no ] ] > 0) do={ :set $guestWiFiDisabled no }
+  remove [ find where interface-type=virtual ]
+
+  set [ find default-name=wlan1 ] \
+    disabled=no ssid=ragnarok mode=ap-bridge security-profile=default \
+    band=2ghz-b/g/n channel-width=20/40mhz-XX frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+  set [ find default-name=wlan2 ] \
+    disabled=no ssid=ragnarok5 mode=ap-bridge security-profile=default \
+    band=5ghz-a/n/ac channel-width=20/40/80mhz-Ceee frequency=auto \
+    country=switzerland installation=indoor wps-mode=disabled
+
+  add name=wlan2a master-interface=wlan2 disabled=$guestWiFiDisabled \
+    ssid=perkunas security-profile=guest

@@ -1,0 +1,21 @@
+# DHCP
+
+/ip pool
+  remove [ find ]
+  add name=pool1 ranges=192.168.100.100-192.168.100.254
+  add name=guest-pool1 ranges=192.168.101.100-192.168.101.254
+
+/ip dhcp-server
+  remove [ find ]
+  add name=dhcp1 address-pool=pool1 interface=bridge1 disabled=no
+  add name=dhcp2 address-pool=guest-pool1 interface=wlan2a disabled=no
+
+/ip dhcp-server network
+  remove [ find ]
+  add address=192.168.100.0/24 dns-server=8.8.8.8,8.8.4.4 \
+    gateway=192.168.100.1 netmask=24
+  add address=192.168.101.0/24 dns-server=8.8.8.8,8.8.4.4 \
+    gateway=192.168.101.1 netmask=24
+
+/ip dhcp-client
+  remove [ find ]

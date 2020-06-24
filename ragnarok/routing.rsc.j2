@@ -1,0 +1,27 @@
+# Routing
+
+/ip address
+#  add interface=ether1 address=192.168.100.2/24
+  remove [ find invalid ]
+  remove [ find interface=wlan2a ]
+  add interface=wlan2a address=192.168.101.1/24
+
+/ip route
+  remove [ find where static ]
+  add gateway=192.168.100.1
+
+/ip dns
+  set servers=8.8.8.8,8.8.4.4
+
+/interface bridge
+  remove [ find ]
+  add name=bridge1
+
+/interface bridge settings
+  set use-ip-firewall=yes
+
+/interface bridge port
+  remove [ find ]
+  add bridge=bridge1 interface=ether1
+  add bridge=bridge1 interface=wlan1
+  add bridge=bridge1 interface=wlan2
