@@ -1,5 +1,18 @@
 # Routing
 
+/interface bridge
+  remove [ find ]
+  add name=bridge1
+
+/interface bridge settings
+  set use-ip-firewall=yes
+
+/interface bridge port
+  remove [ find ]
+  add bridge=bridge1 interface=ether1
+  add bridge=bridge1 interface=wlan1
+  add bridge=bridge1 interface=wlan2
+
 /ip address
 #  add interface=ether1 address=192.168.100.2/24
   remove [ find invalid ]
@@ -13,15 +26,8 @@
 /ip dns
   set servers=8.8.8.8,8.8.4.4
 
-/interface bridge
+/ip dns static
   remove [ find ]
-  add name=bridge1
 
-/interface bridge settings
-  set use-ip-firewall=yes
-
-/interface bridge port
-  remove [ find ]
-  add bridge=bridge1 interface=ether1
-  add bridge=bridge1 interface=wlan1
-  add bridge=bridge1 interface=wlan2
+/ip neighbor discovery-settings
+  set discover-interface-list=!dynamic
