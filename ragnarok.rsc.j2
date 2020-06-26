@@ -1,3 +1,5 @@
+:do {
+
 {% include 'ragnarok/general-settings.rsc.j2' %}
 {% include 'common/auto-upgrade.rsc.j2' %}
 {% include 'common/security-profiles.rsc.j2' %}
@@ -7,3 +9,9 @@
 {% include 'ragnarok/firewall.rsc.j2' %}
 {% include 'ragnarok/traffic-shaping.rsc.j2' %}
 {% include 'ragnarok/access-control.rsc.j2' %}
+
+# Script loaded successfully
+:beep frequency=1000 length=0.02
+
+} on-error { :beep frequency=500 length 0.2 };
+
