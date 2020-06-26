@@ -1,3 +1,8 @@
+# Auto scheduled version upgrade
+
+/system package update
+  set channel=stable
+
 /system script
   remove [ find name=auto-upgrade ]
   add name=auto-upgrade source=\
@@ -8,4 +13,4 @@
 
 /system scheduler
   remove [ find name=auto-upgrade ]
-  add name=auto-upgrade start-time=12:00:00 interval=7d on-event=auto-update
+  add name=auto-upgrade start-time=06:00:00 interval=7d on-event=auto-update
