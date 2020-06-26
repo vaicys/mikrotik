@@ -5,18 +5,21 @@
   :if ([ :len [ find name=wlan2a disabled=no ] ] > 0) do={ :set $guestWiFiDisabled no }
   remove [ find where interface-type=virtual ]
 
+# real wlan1 antenna-gain=2.5, minimum is 3 for switzerland
+
   set [ find default-name=wlan1 ] \
     ssid=ragnarok mode=ap-bridge security-profile=default \
     band=2ghz-g/n wireless-protocol=802.11 channel-width=20mhz \
-# real antenna-gain=2.5, minimum is 3 for switzerland
     antenna-gain=3 frequency=auto scan-list=2412,2437,2462 \
-    country=switzerland frequency-mode=regulatory-domain installation=indoor \
+    country=switzerland frequency-mode=regulatory-domain \
+    installation=indoor distance=indoors \
     wps-mode=disabled wmm-support=enabled disabled=no
   set [ find default-name=wlan2 ] \
     ssid=ragnarok5 mode=ap-bridge security-profile=default \
     band=5ghz-a/n/ac wireless-protocol=802.11 channel-width=20/40/80mhz-Ceee \
     antenna-gain=2 frequency=auto \
-    country=switzerland frequency-mode=regulatory-domain installation=indoor \
+    country=switzerland frequency-mode=regulatory-domain \
+    installation=indoor distance=indoors \
     wps-mode=disabled wmm-support=enabled disabled=no
 
   add name=wlan2a master-interface=wlan2 disabled=$guestWiFiDisabled \
