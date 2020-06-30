@@ -10,13 +10,13 @@
 /ip firewall filter
   remove [ find where !dynamic ]
 
-  add chain=forward comment="[forward]: fasttrack" \
-    connection-state=established,related action=fasttrack-connection
   add chain=forward comment="[forward] accept: state related" \
     connection-state=established,related,untracked action=accept
   add chain=forward comment="[forward] drop: state invalid" \
     connection-state=invalid action=drop
 
+  add chain=forward comment="[forward] drop: invalid 'guest' traffic" \
+    in-interface=wlan2a src-address-list=!guest-lan action=drop
   add chain=forward comment="[forward] drop: from 'guest' to 'lan'" \
     src-address-list=guest-lan dst-address-list=lan action=drop
   add chain=forward comment="[forward] drop: new !'local' connections to nat network" \
@@ -59,3 +59,9 @@
     to-addresses={{ rule.address }} to-ports={{ rule.port }} \
     action=dst-nat
 {% endfor %} #}
+
+/ip firewall mangle
+  remove [ find where !dynamic ]
+
+/ip firewall raw
+  remove [ find where !dynamic ]
