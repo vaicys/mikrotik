@@ -2,4 +2,5 @@
 
 /queue simple
   remove [ find where !dynamic ]
-  add name=guest-queue target=wlan2a max-limit=100M/100M
+  add name=guest-queue target=wlan2a \
+    max-limit=100M/100M queue=default/default
