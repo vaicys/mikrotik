@@ -2,7 +2,7 @@
 
 /interface wireless
   :local guestWiFiDisabled yes
-  :if ([ :len [ find name=wlan2a disabled=no ] ] > 0) do={ :set $guestWiFiDisabled no }
+  :if ([ :len [ find name=wlan1a disabled=no ] ] > 0) do={ :set $guestWiFiDisabled no }
   remove [ find where interface-type=virtual ]
 
 # real wlan1 antenna-gain=2.5, minimum is 3 for switzerland
@@ -21,6 +21,9 @@
     country=switzerland frequency-mode=regulatory-domain \
     installation=indoor distance=indoors skip-dfs-channels=10min-cac \
     wps-mode=disabled wmm-support=enabled disabled=no
+
+  add name=wlan1a master-interface=wlan1 disabled=$guestWiFiDisabled \
+    ssid=perkunas security-profile=guest default-forwarding=no
 
   add name=wlan2a master-interface=wlan2 disabled=$guestWiFiDisabled \
     ssid=perkunas security-profile=guest default-forwarding=no

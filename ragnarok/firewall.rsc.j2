@@ -16,7 +16,7 @@
     connection-state=invalid action=drop
 
   add chain=forward comment="[forward] drop: invalid 'guest' traffic" \
-    in-interface=wlan2a src-address-list=!guest-lan action=drop
+    in-interface=bridge2 src-address-list=!guest-lan action=drop
   add chain=forward comment="[forward] drop: from 'guest' to 'lan'" \
     src-address-list=guest-lan dst-address-list=lan action=drop
   add chain=forward comment="[forward] drop: new !'local' connections to nat network" \
