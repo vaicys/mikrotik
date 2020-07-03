@@ -1,8 +1,16 @@
 # Routing
 
+/interface
+  set [ find name=ether2 ] disabled=yes
+  set [ find name=ether3 ] disabled=yes
+  set [ find name=ether4 ] disabled=yes
+  set [ find name=ether5 ] disabled=yes
+  set [ find name=sfp1 ] disabled=yes
+
 /interface bridge
   remove [ find ]
   add name=bridge1
+  add name=bridge2
 
 /interface bridge settings
   set use-ip-firewall=no
@@ -12,12 +20,14 @@
   add bridge=bridge1 interface=ether1
   add bridge=bridge1 interface=wlan1
   add bridge=bridge1 interface=wlan2
+  add bridge=bridge2 interface=wlan1a
+  add bridge=bridge2 interface=wlan2a
 
 /ip address
 #  add interface=ether1 address=192.168.100.2/24
   remove [ find invalid ]
-  remove [ find interface=wlan2a ]
-  add interface=wlan2a address=192.168.101.1/24
+  remove [ find interface!=ether1 ]
+  add interface=bridge2 address=192.168.101.1/24
 
 /ip route
   remove [ find where static ]
