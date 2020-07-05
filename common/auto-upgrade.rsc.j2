@@ -6,9 +6,9 @@
 /system script
   remove [ find name=auto-upgrade ]
   add name=auto-upgrade source=\
-    "/system package update\r\n\
-    check-for-updates once\r\n\
-    :delay 3s;\r\n\
+    "/system package update; \
+    check-for-updates once; \
+    :delay 3s; \
     :if ([ get status ] = \"New version is available\") do={ install }"
 
 /system scheduler
