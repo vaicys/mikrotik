@@ -32,6 +32,8 @@
     src-address-list=guest-lan action=drop
   add chain=input comment="[input] accept: from lan" \
     src-address-list=lan action=accept
+  add chain=input comment="[input] accept: sstp traffic" \
+    protocol=tcp dst-port=443 action=accept
   add chain=input comment="[input] accept: icmp" \
     protocol=icmp action=accept
 

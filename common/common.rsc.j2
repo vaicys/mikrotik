@@ -1,8 +1,5 @@
 # General router settings
 
-/system identity
-  set name=ragnarok
-
 /system clock
   set time-zone-name=Europe/Zurich
 
@@ -19,7 +16,19 @@
 /ip ssh
   set always-allow-password-login=no strong-crypto=yes forwarding-enabled=local
 
+/ip socks
+  set enabled=no
+
+/ip proxy
+  set enabled=no
+
+/ip upnp
+  set enabled=no
+
 /tool mac-server
   set allowed-interface-list=none
   ping set enabled=no
   mac-winbox set allowed-interface-list=all
+
+/tool bandwidth-server
+  set enabled=no

@@ -1,12 +1,14 @@
 :do {
 
-{% include 'ragnarok/general-settings.rsc.j2' %}
+{% include 'ragnarok/identity.rsc.j2' %}
+{% include 'common/common.rsc.j2' %}
 {% include 'common/auto-upgrade.rsc.j2' %}
 {% include 'common/security-profiles.rsc.j2' %}
 {% include 'ragnarok/wireless.rsc.j2' %}
 {% include 'ragnarok/routing.rsc.j2' %}
 {% include 'ragnarok/dhcp.rsc.j2' %}
 {% include 'ragnarok/firewall.rsc.j2' %}
+{% include 'ragnarok/sstp-server.rsc.j2' %}
 {% include 'ragnarok/traffic-shaping.rsc.j2' %}
 {% include 'ragnarok/access-control.rsc.j2' %}
 

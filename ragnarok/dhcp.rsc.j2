@@ -7,8 +7,8 @@
 
 /ip dhcp-server
   remove [ find ]
-  add name=dhcp1 address-pool=pool1 interface=bridge1 disabled=no
-  add name=dhcp2 address-pool=guest-pool1 interface=bridge2 disabled=no
+  add name=dhcp1 interface=bridge1 address-pool=pool1 disabled=no
+  add name=dhcp2 interface=bridge2 address-pool=guest-pool1 disabled=no
 
 /ip dhcp-server config
   set store-leases-disk=never

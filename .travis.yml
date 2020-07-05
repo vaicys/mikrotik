@@ -9,4 +9,4 @@ install:
 script:
 - j2 ragnarok.rsc.j2 secrets.yml -o ragnarok.rsc
 - scp -i $PRIVATE_KEY_FILE ragnarok.rsc $USERNAME@$HOSTNAME:/
-- ssh -o ConnectTimeout=30 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=ragnarok.rsc
+- ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=ragnarok.rsc
