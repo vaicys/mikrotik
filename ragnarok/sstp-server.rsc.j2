@@ -1,9 +1,23 @@
-# SSTP server setup
+# SSTP server and tunnel setup
 
 /interface sstp-server server
   set enabled=yes certificate=server verify-client-certificate=yes
 
 /ppp secret
   remove [ find service=sstp ]
-  add service=sstp name={{ sstp_connection.username }} password={{ sstp_connection.password }} \
-    local-address=192.168.100.11 remote-address=192.168.100.12
+  {%- for user in sstp_configuration.users %}
+  add service=sstp name="{{ user.name }}" password="{{ user.password }}" \
+    local-address={{ user.local_address }} remote-address={{ user.remote_address }}
+  {%- endfor %}
+
+/interface eoip
+  remove [ find ]
+  {%- for user in sstp_configuration.users %}
+  add name=eoip-tunnel{{ loop.index }} tunnel-id={{ loop.index0 }} \
+    local-address={{ user.local_address }} remote-address={{ user.remote_address }}
+  {%- endfor %}
+
+/interface bridge port
+  {%- for user in sstp_configuration.users %}
+  add bridge=bridge1 interface=eoip-tunnel{{ loop.index }}
+  {%- endfor %}

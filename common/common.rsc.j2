@@ -3,6 +3,15 @@
 /system clock
   set time-zone-name=Europe/Zurich
 
+/ip dns
+  set servers=8.8.8.8,8.8.4.4 allow-remote-requests=no
+
+/ip dns static
+  remove [ find ]
+
+/ip neighbor discovery-settings
+  set discover-interface-list=!dynamic
+
 /ip cloud
   set ddns-enabled=yes update-time=yes
 

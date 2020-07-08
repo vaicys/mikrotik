@@ -54,8 +54,7 @@
   remove [ find ]
   add chain=srcnat comment="[srcnat] masquerade: 'guest' network" \
     src-address-list=guest-lan action=masquerade
-
-{# {% for rule in port_forwarding %}
+{#- {% for rule in port_forwarding %}
   add chain=dstnat comment="{{ rule.comment }}" \
     protocol={{ rule.protocol }} dst-port={{ rule.port }} \
     to-addresses={{ rule.address }} to-ports={{ rule.port }} \

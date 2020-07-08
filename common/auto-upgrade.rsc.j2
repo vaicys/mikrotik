@@ -12,5 +12,5 @@
     :if ([ get status ] = \"New version is available\") do={ install }"
 
 /system scheduler
-  remove [ find name=auto-upgrade ]
-  add name=auto-upgrade start-time=06:00:00 interval=7d on-event=auto-update
+  remove [ find name=scheduled-system-upgrade ]
+  add name=scheduled-system-upgrade start-time=06:00:00 interval=1w on-event=auto-upgrade

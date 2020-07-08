@@ -20,5 +20,8 @@
   add address=192.168.101.0/24 dns-server=8.8.8.8,8.8.4.4 \
     gateway=192.168.101.1 netmask=24
 
+/ip dhcp-server lease
+  set [ find where !dynamic ] server=dhcp1
+
 /ip dhcp-client
   remove [ find ]
