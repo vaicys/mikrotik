@@ -7,11 +7,6 @@
   set [ find name=ether5 ] disabled=yes
   set [ find name=sfp1 ] disabled=yes
 
-/interface eoip
-  remove [ find ]
-  add name=eoip-tunnel1 tunnel-id=0 \
-    local-address=192.168.100.11 remote-address=192.168.100.12
-
 /interface bridge
   remove [ find ]
   add name=bridge1
@@ -25,7 +20,6 @@
   add bridge=bridge1 interface=ether1
   add bridge=bridge1 interface=wlan1
   add bridge=bridge1 interface=wlan2
-  add bridge=bridge1 interface=eoip-tunnel1
   add bridge=bridge2 interface=wlan1a
   add bridge=bridge2 interface=wlan2a
 
@@ -38,12 +32,3 @@
 /ip route
   remove [ find where static ]
   add gateway=192.168.100.1
-
-/ip dns
-  set servers=8.8.8.8,8.8.4.4
-
-/ip dns static
-  remove [ find ]
-
-/ip neighbor discovery-settings
-  set discover-interface-list=!dynamic

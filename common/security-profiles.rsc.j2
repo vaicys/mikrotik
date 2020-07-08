@@ -2,15 +2,16 @@
 
 /interface wireless security-profiles
   remove [ find default=no ]
+{%- for profile in wifi_profiles %}
+  {%- if loop.first %}
   set [ find default=yes ] \
     mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
-    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ wifi_password }}" \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ profile.password }}" \
     group-key-update=1h
-  add name=simple \
+  {%- else %}
+  add name="{{ profile.name }}" \
     mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
-    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ simple_wifi_password }}" \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ profile.password }}" \
     group-key-update=1h
-  add name=guest \
-    mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
-    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ guest_wifi_password }}" \
-    group-key-update=1h
+  {%- endif %}
+{%- endfor %}
