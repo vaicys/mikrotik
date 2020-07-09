@@ -11,6 +11,7 @@ if [ $? -eq 0 ]; then
   j2 $MATCH.rsc.j2 secrets.yml -o $MATCH.rsc || travis_terminate 1
   scp -i $PRIVATE_KEY_FILE $MATCH.rsc $USERNAME@$HOSTNAME:/ || travis_terminate 1
   ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=$MATCH.rsc || travis_terminate 1
+  echo Deployment for \"$MATCH\" completed.
 else
   echo No changes for \"$MATCH\".
 fi

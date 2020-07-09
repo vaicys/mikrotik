@@ -21,7 +21,11 @@
     gateway=192.168.101.1 netmask=24
 
 /ip dhcp-server lease
-  set [ find where !dynamic ] server=dhcp1
+  remove [ find where !dynamic ]
+{%- for lease in static_dhcp_leases %}
+  add server=dhcp1 mac-address={{ lease.mac_address }} address={{ lease.ip_address }} \
+    comment="{{ lease.comment }}"
+{%- endfor %}
 
 /ip dhcp-client
   remove [ find ]
