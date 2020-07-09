@@ -7,6 +7,5 @@ before_install:
 install:
 - pip install j2cli[yaml]
 script:
-- j2 ragnarok.rsc.j2 secrets.yml -o ragnarok.rsc || travis_terminate 1
-- scp -i $PRIVATE_KEY_FILE ragnarok.rsc $USERNAME@$HOSTNAME:/ || travis_terminate 1
-- ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=ragnarok.rsc || travis_terminate 1
+- j2 deploy.sh.j2 secrets.yml -o deploy.sh || travis_terminate 1
+- bash deploy.sh

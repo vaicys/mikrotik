@@ -1,0 +1,17 @@
+#!/bin/bash
+{% for deploy in deployments %}
+MATCH={{ deploy.match }}
+USERNAME={{ deploy.username }}
+HOSTNAME={{ deploy.hostname }}
+
+git diff-tree --no-commit-id --name-only -r HEAD | grep -e $MATCH > /dev/null
+
+if [ $? -eq 0 ]; then
+  echo Changes detected for \"$MATCH\", running deployment.
+  j2 $MATCH.rsc.j2 secrets.yml -o $MATCH.rsc || travis_terminate 1
+  scp -i $PRIVATE_KEY_FILE $MATCH.rsc $USERNAME@$HOSTNAME:/ || travis_terminate 1
+  ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=$MATCH.rsc || travis_terminate 1
+else
+  echo No changes for \"$MATCH\".
+fi
+{% endfor %}
