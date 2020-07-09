@@ -1,0 +1,39 @@
+# Routing
+
+/interface bridge
+  remove [ find ]
+  add name=bridge1 comment="WLAN-LAN bridge"
+  add name=bridge2 comment="VPN L2 bridge"
+  add name=bridge3 comment="Regular WiFi"
+  add name=bridge4 comment="Guest WiFi"
+
+/interface bridge settings
+  set use-ip-firewall=no
+
+/interface bridge port
+  remove [ find ]
+  add bridge=bridge1 interface=ether1
+  add bridge=bridge1 interface=wlan1
+  add bridge=bridge2 interface=wlan1a
+  add bridge=bridge3 interface=wlan1b
+  add bridge=bridge3 interface=wlan1c
+  add bridge=bridge4 interface=wlan1d
+
+/ip address
+#  add interface=ether1 address=192.168.100.3/24
+  remove [ find invalid ]
+  remove [ find interface!=ether1 ]
+  add interface=bridge3 address=192.168.101.1/24
+  add interface=bridge4 address=192.168.102.1/24
+
+/ip route
+  remove [ find where static ]
+
+/ip dns
+  set servers=8.8.8.8,8.8.4.4
+
+/ip dns static
+  remove [ find ]
+
+/ip neighbor discovery-settings
+  set discover-interface-list=!dynamic

@@ -1,0 +1,18 @@
+# SSTP client
+
+{%- for user in sstp_configuration.users if user.name == 'peanut' %}
+/interface sstp-client
+  remove [ find ]
+  add name=sstp-out1 disabled=no \
+    user="{{ user.name }}" password="{{ user.password }}" \
+    connect-to={{ sstp_configuration.server }} certificate=client verify-server-certificate=yes \
+    add-default-route=no
+
+/interface eoip
+  remove [ find ]
+  add name=eoip-tunnel1 tunnel-id=0 \
+    local-address={{ user.remote_address }} remote-address={{ user.local_address }}
+
+/interface bridge port
+  add bridge=bridge2 interface=eoip-tunnel1
+{%- endfor %}
