@@ -28,12 +28,3 @@
 
 /ip route
   remove [ find where static ]
-
-/ip dns
-  set servers=8.8.8.8,8.8.4.4
-
-/ip dns static
-  remove [ find ]
-
-/ip neighbor discovery-settings
-  set discover-interface-list=!dynamic

@@ -10,9 +10,25 @@ git diff-tree --no-commit-id --name-only -r HEAD | grep -e $MATCH > /dev/null
 if [ $? -eq 0 ]; then
   echo Changes detected for \"$MATCH\", running deployment.
   echo $HOSTKEY > ~/.ssh/known_hosts
-  j2 $MATCH.rsc.j2 secrets.yml -o $MATCH.rsc || travis_terminate 1
-  scp -i $PRIVATE_KEY_FILE $MATCH.rsc $USERNAME@$HOSTNAME:/ || travis_terminate 1
-  ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=$MATCH.rsc || travis_terminate 1
+
+  j2 $MATCH.rsc.j2 secrets.yml -o $MATCH.rsc
+  if [ $? -ne 0 ]; then
+    echo Encountered errors while compiling template. Terminating.
+    exit 1
+  fi
+
+  scp -i $PRIVATE_KEY_FILE $MATCH.rsc $USERNAME@$HOSTNAME:/
+  if [ $? -ne 0 ]; then
+    echo Encountered errors while uploading configuration. Terminating.
+    exit 1
+  fi
+
+  ssh -o ConnectTimeout=60 -o BatchMode=yes -i $PRIVATE_KEY_FILE $USERNAME@$HOSTNAME import file=$MATCH.rsc
+  if [ $? -ne 0 ]; then
+    echo Encountered errors while applying configuration. Terminating.
+    exit 1
+  fi
+
   echo Deployment for \"$MATCH\" completed.
 else
   echo No changes for \"$MATCH\".

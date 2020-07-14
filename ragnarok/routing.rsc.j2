@@ -2,10 +2,6 @@
 
 /interface
   set [ find name=ether2 ] disabled=yes
-  set [ find name=ether3 ] disabled=yes
-  set [ find name=ether4 ] disabled=yes
-  set [ find name=ether5 ] disabled=yes
-  set [ find name=sfp1 ] disabled=yes
 
 /interface bridge
   remove [ find ]
@@ -20,6 +16,7 @@
   add bridge=bridge1 interface=ether1
   add bridge=bridge1 interface=wlan1
   add bridge=bridge1 interface=wlan2
+  add bridge=bridge1 interface=wlan3
   add bridge=bridge2 interface=wlan1a
   add bridge=bridge2 interface=wlan2a
 
