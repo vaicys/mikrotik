@@ -1,12 +1,10 @@
 # Auto scheduled version upgrade
 
-/system package update
-  set channel=stable
-
 /system script
   remove [ find name=auto-upgrade ]
   add name=auto-upgrade source=\
     "/system package update; \
+    set channel=stable; \
     check-for-updates once; \
     :delay 3s; \
     :if ([ get status ] = \"New version is available\") do={ install }"

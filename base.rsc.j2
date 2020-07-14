@@ -1,0 +1,17 @@
+{% include 'common/common.rsc.j2' %}
+{% include 'common/auto-upgrade.rsc.j2' %}
+
+/interface
+  set [ find type=ether ] disabled=no
+
+/ip firewall filter
+  set [ find ] disabled=yes
+
+/ip firewall nat
+  set [ find ] disabled=yes
+
+/ip dhcp-server
+  set [ find ] disabled=yes
+
+/interface wireless access-list
+  set [ find ] disabled=yes
