@@ -1,0 +1,21 @@
+# Firewall & NAT
+
+/ip firewall address-list {
+  remove [ find ]
+}
+
+/ip firewall filter {
+  remove [ find where !dynamic ]
+}
+
+/ip firewall nat {
+  remove [ find ]
+}
+
+/ip firewall mangle {
+  remove [ find where !dynamic ]
+}
+
+/ip firewall raw {
+  remove [ find where !dynamic ]
+}

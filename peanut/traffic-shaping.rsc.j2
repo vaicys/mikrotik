@@ -1,6 +1,0 @@
-# Traffic shaping
-
-/queue simple
-  remove [ find where !dynamic ]
-  add name=guest-queue target=bridge4 \
-    max-limit=50M/50M queue=default/default

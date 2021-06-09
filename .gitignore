@@ -1,5 +1,4 @@
 .idea
-*.rsc
-*.sh
 *.id_rsa
 secrets*
+output

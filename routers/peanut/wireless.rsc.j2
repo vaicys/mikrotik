@@ -1,0 +1,25 @@
+# Wireless
+
+/interface wireless
+  remove [ find where interface-type=virtual ]
+
+# real wlan1 antenna-gain=1.5, minimum is 2 for switzerland
+
+  set [ find default-name=wlan1 ] disabled=no \
+    ssid=ap-bridge mode=ap-bridge security-profile=simple \
+    band=2ghz-g/n wireless-protocol=802.11 channel-width=20mhz \
+    antenna-gain=2 frequency=auto scan-list=2412,2437,2462 \
+    country=switzerland frequency-mode=regulatory-domain \
+    installation=indoor distance=indoors \
+    wps-mode=disabled wmm-support=enabled
+
+  add name=wlan1a master-interface=wlan1 disabled=no \
+    ssid=ap-vpn security-profile=simple
+
+  add name=wlan1b master-interface=wlan1 disabled=no \
+    ssid=ragnarok security-profile=default
+  add name=wlan1c master-interface=wlan1 disabled=no \
+    ssid=ragnarok5 security-profile=default
+
+  add name=wlan1d master-interface=wlan1 disabled=no \
+    ssid=perkunas security-profile=guest default-forwarding=no
