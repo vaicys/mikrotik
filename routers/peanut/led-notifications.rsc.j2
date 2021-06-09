@@ -1,0 +1,20 @@
+# LED notifications
+
+/tool netwatch
+  remove [ find ]
+
+# AP/CAP LED
+{
+  :local internetHost 8.8.8.8
+  add host=$internetHost \
+    up-script="/system leds set [ find leds=cap-led ] type=on" \
+    down-script="/system leds set [ find leds=cap-led ] type=off"
+}
+
+# WAN LED
+{
+  :local localHost 192.168.100.2
+  add host=$localHost \
+    up-script="/system leds set [ find leds=wlan-led ] type=on" \
+    down-script="/system leds set [ find leds=wlan-led ] type=off"
+}

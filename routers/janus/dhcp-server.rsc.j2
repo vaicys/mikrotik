@@ -1,0 +1,33 @@
+# DHCP
+
+/ip pool {
+  remove [ find ]
+  add name=pool1 ranges=192.168.100.100-192.168.100.254
+}
+
+/ip dhcp-server {
+  remove [ find ]
+  add name=dhcp1 interface=bridge1 address-pool=pool1 disabled=no
+}
+
+/ip dhcp-server config {
+  set store-leases-disk=never
+}
+
+/ip dhcp-server network {
+  remove [ find ]
+  add address=192.168.100.0/24 dns-server=8.8.8.8,8.8.4.4 \
+    gateway=192.168.100.1 netmask=24
+}
+
+/ip dhcp-server lease {
+  remove [ find where !dynamic ]
+{%- for lease in static_dhcp_leases %}
+  add server=dhcp1 mac-address={{ lease.mac_address }} address={{ lease.ip_address }} \
+    comment="{{ lease.comment }}"
+{%- endfor %}
+}
+
+/ip dhcp-client {
+  remove [ find ]
+}
