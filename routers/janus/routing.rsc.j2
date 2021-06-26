@@ -21,6 +21,7 @@
 /ip address {
 #  add interface=ether1 address=192.168.100.4/24
   remove [ find invalid ]
+  remove [ find interface!=ether1 ]
 }
 
 /ip route {

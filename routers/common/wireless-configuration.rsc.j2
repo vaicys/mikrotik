@@ -1,0 +1,46 @@
+# Wireless security profiles
+
+/interface wireless security-profiles {
+  remove [ find default=no ]
+{%- for profile in wifi_profiles %}
+  {%- if loop.first %}
+  set [ find default=yes ] \
+    mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ profile.password }}" \
+    group-key-update=1h
+  {%- else %}
+  add name="{{ profile.name }}" \
+    mode=dynamic-keys unicast-ciphers=aes-ccm group-ciphers=aes-ccm \
+    authentication-types=wpa2-psk wpa2-pre-shared-key="{{ profile.password }}" \
+    group-key-update=1h
+  {%- endif %}
+{%- endfor %}
+}
+
+# Wireless SSIDs
+
+/interface wireless {
+  remove [ find where interface-type=virtual ]
+
+  :local suffixes "abcdefghijklmnopqrstuvwxyz"
+  :local suffixIndex 0
+
+{%- for ssid in wifi_ssids %}
+  {% if ssid.default is defined and ssid.default %}
+  set [ find band~"{{ ssid.band_filter }}" and interface-type!=virtual ] \
+    ssid="{{ ssid.name }}" security-profile={{ ssid.profile }}
+  {%- else %}
+  :foreach interface in=[find where interface-type!=virtual] do={
+    :local interfaceName ([get $interface name] . [:pick $suffixes $suffixIndex])
+    add name=$interfaceName \
+      master-interface=[get $interface name] \
+      ssid="{{ssid.name}}" security-profile={{ssid.profile}} \
+      disabled=no default-forwarding=no wps-mode=disabled
+    /interface bridge port {
+      add bridge=bridge1 interface=$interfaceName
+    }
+  }
+  :set suffixIndex ($suffixIndex + 1)
+  {%- endif %}
+{%- endfor %}
+}
