@@ -2,8 +2,9 @@
 
 # Router configuration
 
-- [MikroTik configuration manual](https://wiki.mikrotik.com/wiki/Manual:TOC)
-- [MikroTik console guide](https://wiki.mikrotik.com/wiki/Manual:Console)
+- [Scripting guide](https://wiki.mikrotik.com/wiki/Manual:Scripting)
+- [Configuration manual](https://wiki.mikrotik.com/wiki/Manual:TOC)
+- [Console guide](https://wiki.mikrotik.com/wiki/Manual:Console)
 
 # Usage
 
