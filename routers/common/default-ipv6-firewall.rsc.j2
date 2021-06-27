@@ -1,0 +1,50 @@
+# Firewall from default configuration
+
+/ipv6 firewall address-list {
+  remove [ find ]
+
+  add list=bad_ipv6_address address=::/128 comment="unspecified address"
+  add list=bad_ipv6_address address=::1 comment="loopback"
+  add list=bad_ipv6_address address=fec0::/10 comment="site-local"
+  add list=bad_ipv6_address address=::ffff:0:0/96 comment="ipv4-mapped"
+  add list=bad_ipv6_address address=::/96 comment="ipv4 compat"
+  add list=bad_ipv6_address address=100::/64 comment="discard only "
+  add list=bad_ipv6_address address=2001:db8::/32 comment="documentation"
+  add list=bad_ipv6_address address=2001:10::/28 comment="ORCHID"
+  add list=bad_ipv6_address address=3ffe::/16 comment="6bone"
+  add list=bad_ipv6_address address=::224.0.0.0/100 comment="other"
+  add list=bad_ipv6_address address=::127.0.0.0/104 comment="other"
+  add list=bad_ipv6_address address=::/104 comment="other"
+  add list=bad_ipv6_address address=::255.0.0.0/104 comment="other"
+}
+
+/ipv6 firewall filter {
+  remove [ find where !dynamic ]
+
+  add chain=input action=accept connection-state=established,related,untracked \
+    comment="accept established,related,untracked"
+  add chain=input action=drop connection-state=invalid comment="drop invalid"
+  add chain=input action=accept protocol=icmpv6 comment="accept ICMPv6"
+  add chain=input action=accept protocol=udp port=33434-33534 comment="accept UDP traceroute"
+  add chain=input action=accept protocol=udp dst-port=546 src-address=fe80::/10 \
+    comment="accept DHCPv6-Client prefix delegation."
+  add chain=input action=accept protocol=udp dst-port=500,4500 comment="accept IKE"
+  add chain=input action=accept protocol=ipsec-ah comment="accept ipsec AH"
+  add chain=input action=accept protocol=ipsec-esp comment="accept ipsec ESP"
+  add chain=input action=accept ipsec-policy=in,ipsec comment="accept all that matches ipsec policy"
+  add chain=input action=drop in-interface-list=!LAN comment="drop everything else not coming from LAN"
+
+  add chain=forward action=accept connection-state=established,related,untracked \
+    comment="accept established,related,untracked"
+  add chain=forward action=drop connection-state=invalid comment="drop invalid"
+  add chain=forward action=drop src-address-list=bad_ipv6_address comment="drop packets with bad src ipv6"
+  add chain=forward action=drop dst-address-list=bad_ipv6_address comment="drop packets with bad dst ipv6"
+  add chain=forward action=drop protocol=icmpv6 hop-limit=equal:1 comment="rfc4890 drop hop-limit=1"
+  add chain=forward action=accept protocol=icmpv6 comment="accept ICMPv6"
+  add chain=forward action=accept protocol=139 comment="accept HIP"
+  add chain=forward action=accept protocol=udp dst-port=500,4500 comment="accept IKE"
+  add chain=forward action=accept protocol=ipsec-ah comment="accept ipsec AH"
+  add chain=forward action=accept protocol=ipsec-esp comment="accept ipsec ESP"
+  add chain=forward action=accept ipsec-policy=in,ipsec comment="accept all that matches ipsec policy"
+  add chain=forward action=drop in-interface-list=!LAN comment="drop everything else not coming from LAN"
+}
