@@ -5,8 +5,7 @@
 }
 
 /system ntp client {
-  set enabled=yes primary-ntp=0.0.0.0 secondary-ntp=0.0.0.0 \
-    server-dns-names=time.google.com
+  set enabled=yes servers=time.google.com
 }
 
 /system routerboard settings {
@@ -15,7 +14,8 @@
 
 /ip dns {
   set servers=8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844 \
-    allow-remote-requests=no
+    allow-remote-requests=no \
+    use-doh-server=https://dns.google/dns-query verify-doh-cert=yes
 }
 
 /ip dns static {
