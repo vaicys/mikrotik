@@ -1,0 +1,28 @@
+# Routing
+
+/interface bridge {
+  remove [ find ]
+  add name=bridge1
+}
+
+/interface bridge settings {
+  set use-ip-firewall=no
+}
+
+/interface bridge port {
+  remove [ find ]
+  add bridge=bridge1 interface=ether1
+  add bridge=bridge1 interface=wifi1
+  add bridge=bridge1 interface=wifi2
+}
+
+/ip address {
+#  add interface=ether1 address=192.168.100.3/24
+  remove [ find invalid ]
+  remove [ find interface!=ether1 ]
+}
+
+/ip route {
+  remove [ find where static ]
+  add gateway=192.168.100.1
+}
