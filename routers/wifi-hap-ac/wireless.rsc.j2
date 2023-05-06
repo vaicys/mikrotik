@@ -1,0 +1,23 @@
+# Wireless interfaces
+
+/interface wireless {
+  # Real wlan1 antenna gain is 2.5, minimum for Switzerland is 3
+
+  set [ find default-name=wlan1 ] disabled=no \
+    mode=ap-bridge security-profile=default \
+    band=2ghz-g/n wireless-protocol=802.11 channel-width=20mhz \
+    antenna-gain=11 frequency=auto scan-list=2412,2437,2462 \
+    country=switzerland frequency-mode=regulatory-domain \
+    installation=indoor distance=indoors \
+    wps-mode=disabled wmm-support=enabled
+
+  # Real wlan2 antenna gain is 2
+
+  set [ find default-name=wlan2 ] disabled=no \
+    mode=ap-bridge security-profile=default \
+    band=5ghz-a/n/ac wireless-protocol=802.11 channel-width=20/40/80mhz-XXXX \
+    antenna-gain=10 frequency=auto \
+    country=switzerland frequency-mode=regulatory-domain \
+    installation=indoor distance=indoors skip-dfs-channels=10min-cac \
+    wps-mode=disabled wmm-support=enabled
+}
