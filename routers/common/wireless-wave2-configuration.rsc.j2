@@ -1,0 +1,38 @@
+# Wireless security profiles
+
+/interface wifiwave2 security {
+  remove [ find ]
+{%- for profile in wifi_profiles %}
+  add name="{{ profile.name }}" \
+    authentication-types=wpa2-psk,wpa3-psk passphrase="{{ profile.password }}" \
+    group-key-update=1h wps=disable
+{%- endfor %}
+}
+
+# Wireless SSIDs
+
+/interface wifiwave2 {
+  remove [ find where master-interface ]
+
+  :local suffixes "abcdefghijklmnopqrstuvwxyz"
+  :local suffixIndex 0
+
+{%- for ssid in wifi_ssids %}
+  {% if ssid.default is defined and ssid.default %}
+  set [ find channel~"{{ ssid.band_filter }}" and !master-interface ] \
+    configuration.ssid="{{ ssid.name }}" security={{ ssid.profile }}
+  {%- else %}
+  :foreach interface in=[find where !master-interface] do={
+    :local interfaceName ([get $interface name] . [:pick $suffixes $suffixIndex])
+    add name=$interfaceName \
+      master-interface=[get $interface name] \
+      configuration.ssid="{{ssid.name}}" security={{ssid.profile}} \
+      disabled=no
+    /interface bridge port {
+      add bridge=bridge1 interface=$interfaceName
+    }
+  }
+  :set suffixIndex ($suffixIndex + 1)
+  {%- endif %}
+{%- endfor %}
+}
