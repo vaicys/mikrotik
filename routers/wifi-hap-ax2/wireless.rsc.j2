@@ -3,14 +3,13 @@
 /interface wifiwave2 channel {
   remove [ find ]
   add name=channel-2ghz frequency=2412,2437,2462 band=2ghz-ax width=20mhz
-  add name=channel-5ghz band=5ghz-ax width=20/40/80mhz skip-dfs-channels=10min-cac
+  add name=channel-5ghz band=5ghz-ax width=20/40/80mhz skip-dfs-channels=all
 }
 
 /interface wifiwave2 configuration }
   remove [ find ]
   add name=default mode=ap country=Switzerland antenna-gain=12
 }
-
 
 /interface wifiwave2 {
   # Real wifi1 antenna gain is 4.5
