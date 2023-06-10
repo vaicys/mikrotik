@@ -1,0 +1,32 @@
+# DHCP server
+
+/ip pool {
+  remove [ find ]
+  add name=pool-ipv4 ranges=192.168.100.100-192.168.100.254
+}
+
+/ip dhcp-server {
+  remove [ find ]
+  add name=dhcp-ipv4 interface=bridge1 address-pool=pool-ipv4 disabled=no
+
+  config set store-leases-disk=never
+
+  network {
+    remove [ find ]
+    add address=192.168.100.0/24 dns-server=8.8.8.8,8.8.4.4 \
+      gateway=192.168.100.1 netmask=24
+  }
+
+  lease {
+    remove [ find where !dynamic ]
+    {%- for lease in static_dhcp_leases %}
+    add server=dhcp-ipv4 mac-address={{ lease.mac_address }} address={{ lease.ip_address }} \
+      comment="{{ lease.comment }}"
+    {%- endfor %}
+  }
+}
+
+/ipv6 dhcp-server {
+  remove [ find ]
+  #add name=dhcp-ipv6 interface=bridge1 address-pool=pool-ipv6
+}

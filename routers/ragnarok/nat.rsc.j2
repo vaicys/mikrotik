@@ -1,0 +1,23 @@
+# Network address translation
+
+/ip firewall nat {
+  remove [ find ]
+  add chain=srcnat out-interface-list=wan action=masquerade
+
+  # Port forwarding
+  {%- for config in port_forwarding %}
+  {%- if 'tcp' in config.protocol %}
+  add chain=dstnat protocol=tcp dst-port={{ config.src_port }} to-address={{ config.dst_address }} {#-
+  #} to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} action=dst-nat \
+    comment="{{ config.name }}"
+  {%- endif %}
+  {%- if 'udp' in config.protocol %}
+  add chain=dstnat protocol=udp dst-port={{ config.src_port }} to-address={{ config.dst_address }} {#-
+  #} to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} action=dst-nat \
+    comment="{{ config.name }}"
+  {%- endif %}
+  {%- endfor %}
+
+  # Hairpin
+  # add chain=srcnat out-interface-list=lan action=masquerade
+}
