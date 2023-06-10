@@ -1,0 +1,42 @@
+# Routing
+
+# Bridging configuration
+
+:if ([:len [ /interface bridge find where name=bridge1 ] ] = 0) do={
+  /interface bridge {
+    settings set use-ip-firewall=no
+
+    add name=bridge1
+
+    port {
+      remove [ find where bridge=bridge1 ]
+      add bridge=bridge1 interface=spf28-1
+      add bridge=bridge1 interface=sfp-sfpplus1
+    }
+  }
+}
+
+# IPv4 configuration
+
+:if ([:len [ /ip address find where interface=bridge1 ] ] = 0) do={
+  /ip address {
+    add interface=bridge1 address=192.168.100.1/24
+  }
+}
+
+# IPv6 configuration
+
+:if ([:len [ /ipv6 address find where interface=bridge1 ] ] = 0) do={
+  /ipv6 {
+    settings set accept-router-advertisements=yes
+
+    address {
+      add from-pool=pool-ipv6 interface=bridge1
+    }
+
+    nd {
+      set [ find default=yes ] interface=bridge1 \
+        managed-address-configuration=yes other-configuration=yes
+    }
+  }
+}
