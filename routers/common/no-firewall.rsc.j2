@@ -4,8 +4,13 @@
   set [ find where !dynamic ] disabled=yes
 }
 
+/ip firewall service-port {
+  set [ find where name!=udplite && name!=dccp && name!=sctp ] disabled=yes
+}
+
 :do {
   /ipv6 firewall filter {
     set [ find where !dynamic ] disabled=yes
   }
 } on-error={ }
+
