@@ -1,13 +1,23 @@
 # DHCP client
 
+/system script {
+  remove [ find name=dhcp-update ]
+  add name=dhcp-update source=\
+    "/ip firewall address-list remove [ find where list=wan ]; \
+    :if ($\"bound\"=1) do={ \
+      /ip firewall address-list add list=wan address=$\"lease-address\"
+    }"
+}
+
 /ip dhcp-client {
   remove [ find ]
-  add interface=sfp28-2 add-default-route=yes use-peer-dns=no disabled=yes
+  add interface=sfp28-2 add-default-route=yes \
+    use-peer-dns=no use-peer-ntp=no script=dhcp-update
 }
 
 /ipv6 dhcp-client {
   remove [ find ]
   add interface=sfp28-2 add-default-route=yes use-peer-dns=no \
     request=address,prefix \
-    pool-name=pool-ipv6 pool-prefix-length=56 disabled=yes
+    pool-name=pool-ipv6 pool-prefix-length=48
 }

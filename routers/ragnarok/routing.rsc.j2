@@ -1,5 +1,11 @@
 # Routing
 
+# WAN interface
+
+/interface ethernet {
+  set [ find default-name=sfp-sfpplus2 ] auto-negotiation=yes fec-mode=off
+}
+
 # Bridging configuration
 
 :if ([:len [ /interface bridge find where name=bridge1 ] ] = 0) do={
@@ -26,7 +32,7 @@
 
 # IPv6 configuration
 
-:if ([:len [ /ipv6 address find where interface=bridge1 ] ] = 0) do={
+:if ([:len [ /ipv6 address find where interface=bridge1 and from-pool!="" ] ] = 0) do={
   /ipv6 {
     settings set accept-router-advertisements=yes
 
@@ -40,3 +46,5 @@
     }
   }
 }
+
+

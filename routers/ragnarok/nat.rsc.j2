@@ -3,21 +3,27 @@
 /ip firewall nat {
   remove [ find ]
   add chain=srcnat out-interface-list=wan action=masquerade
+  add chain=srcnat src-address=192.168.100.0/24 dst-address=192.168.100.0/24 \
+    action=masquerade \
+    comment="Hairpin NAT"
 
   # Port forwarding
   {%- for config in port_forwarding %}
   {%- if 'tcp' in config.protocol %}
-  add chain=dstnat protocol=tcp dst-port={{ config.src_port }} to-address={{ config.dst_address }} {#-
-  #} to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} action=dst-nat \
+  add chain=dstnat dst-address-list=wan protocol=tcp to-address={{ config.dst_address }} \
+    to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} \
+    dst-port={{ config.src_port }} \
+    action=dst-nat \
     comment="{{ config.name }}"
   {%- endif %}
   {%- if 'udp' in config.protocol %}
-  add chain=dstnat protocol=udp dst-port={{ config.src_port }} to-address={{ config.dst_address }} {#-
-  #} to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} action=dst-nat \
+  add chain=dstnat dst-address-list=wan protocol=udp to-address={{ config.dst_address }} \
+    to-port={{ config.dst_port if config.dst_port is defined else config.src_port }} \
+    dst-port={{ config.src_port }} \
+    action=dst-nat \
     comment="{{ config.name }}"
   {%- endif %}
   {%- endfor %}
 
-  # Hairpin
-  # add chain=srcnat out-interface-list=lan action=masquerade
+
 }
