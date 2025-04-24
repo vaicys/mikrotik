@@ -37,7 +37,10 @@
     settings set accept-router-advertisements=yes
 
     address {
-      add from-pool=pool-ipv6 interface=bridge1
+      # Duplicate Address Detection (DAD) has to be disabled on networks that contain any other
+      # Linux box with enabled routing because it responds to router advertisements, preventing
+      # Mikrotik from assigning and advertising the the prefix correctly.
+      add interface=bridge1 from-pool=pool-ipv6 advertise=yes no-dad=yes
     }
 
     nd {
