@@ -6,10 +6,13 @@
   add chain=input connection-state=established,related action=accept
   add chain=input in-interface-list=lan action=accept
   add chain=input protocol=icmp action=accept
+  add chain=input protocol=tcp dst-port=22 action=accept
+  add chain=input protocol=icmp action=accept
   add chain=input action=drop
 
   add chain=forward connection-state=established,related action=fasttrack-connection
   add chain=forward connection-state=established,related action=accept
+  add chain=forward in-interface-list=lan action=accept
   add chain=forward connection-state=invalid action=drop
   add chain=forward in-interface-list=wan connection-nat-state=!dstnat connection-state=new action=drop
 }
@@ -20,22 +23,14 @@
   add chain=input connection-state=established,related action=accept
   add chain=input in-interface-list=lan action=accept
   add chain=input protocol=icmpv6 action=accept
-  add chain=input protocol=udp port=33434-33534 action=accept \
-    comment="UDP traceroute"
-  add chain=input protocol=udp dst-port=500,4500 action=accept \
-    comment="Internet Key Exchange"
   add chain=input protocol=udp dst-port=546 src-address=fe80::/16 action=accept \
     comment="DHCPv6-Client prefix delegation"
   add chain=input action=drop
 
+  add chain=forward connection-state=established,related action=fasttrack-connection
   add chain=forward connection-state=established,related action=accept
-  add chain=forward connection-state=invalid action=drop
-  add chain=forward protocol=icmpv6 action=accept disabled=yes
-  add chain=forward protocol=139 action=accept disabled=yes \
-    comment="Host Identity Protocol"
-  add chain=forward protocol=udp dst-port=500,4500 action=accept disabled=yes \
-    comment="Internet Key Exchange"
   add chain=forward in-interface-list=lan action=accept
+  add chain=forward connection-state=invalid action=drop
   add chain=forward action=drop
 }
 

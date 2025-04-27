@@ -3,9 +3,6 @@
 /ip firewall nat {
   remove [ find ]
   add chain=srcnat out-interface-list=wan action=masquerade
-  add chain=srcnat src-address=192.168.100.0/24 dst-address=192.168.100.0/24 \
-    action=masquerade \
-    comment="Hairpin NAT"
 
   # Port forwarding
   {%- for config in port_forwarding %}
