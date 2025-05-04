@@ -2,9 +2,9 @@
 
 # Router configuration
 
-- [Scripting guide](https://wiki.mikrotik.com/wiki/Manual:Scripting)
-- [Configuration manual](https://wiki.mikrotik.com/wiki/Manual:TOC)
-- [Console guide](https://wiki.mikrotik.com/wiki/Manual:Console)
+- [Getting started](https://help.mikrotik.com/docs/spaces/ROS/pages/328119/Getting+started)
+- [Scripting guide](https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting)
+- [Console guide](https://help.mikrotik.com/docs/spaces/ROS/pages/8978498/Console)
 
 # Usage
 
