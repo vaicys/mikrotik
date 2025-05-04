@@ -9,7 +9,6 @@
 # Usage
 
 ```
-./build.sh          # create configuration files
-./deploy.sh         # deploy changed files only
-./deploy.sh --all   # force deploy all
+./build.sh            # generate configuration from templates
+./deploy.sh [router]  # deploy router configuration
 ```

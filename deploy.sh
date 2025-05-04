@@ -1,44 +1,29 @@
 #!/bin/bash
 
-if [ ! -d "output" ]; then
-  echo "No configurations found."
+router=$1
+fileName="./output/$1.rsc"
+
+if [ ! -f "$fileName" ]; then
+  echo "No configuration for '$1' found."
   exit
 fi
 
-pushd output > /dev/null
+echo "Deploying \"$router\"..."
 
-for filename in *; do
-  router="${filename%.*}"
+scp $fileName $router:/$router.rsc > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Failed uploading configuration to \"$router\". Exiting."
+  exit
+fi
 
-  if [[ $1 == "--all" ]]; then
-    echo "Deploying for \"$router\"..."
-  else
-    git diff-tree --no-commit-id --name-only -r HEAD | grep -e $router > /dev/null
-    if [ $? -ne 0 ]; then
-      continue
-    fi
-    echo "Changes detected for \"$router\". Deploying..."
-  fi
+echo "Configuration uploaded, importing..."
+ssh $router import file=$router.rsc | grep -e successfully > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Failed importing configuration to \"$router\". See \"output.log\". Exiting."
+  popd > /dev/null
+  exit
+fi
 
-  scp ./$filename $router:/$filename > /dev/null
-  if [ $? -ne 0 ]; then
-    echo "Failed uploading configuration to \"$router\". Exiting."
-    popd > /dev/null
-    exit
-  fi
+rm -f output.log
 
-  echo "Configuration uploaded, importing..."
-
-  ssh $router import file=$filename | grep -e successfully > /dev/null
-  if [ $? -ne 0 ]; then
-    echo "Failed importing configuration to \"$router\". See \"output.log\". Exiting."
-    popd > /dev/null
-    exit
-  fi
-
-  rm -f output.log
-
-  echo "Done."
-done
-
-popd > /dev/null
+echo "Done."
