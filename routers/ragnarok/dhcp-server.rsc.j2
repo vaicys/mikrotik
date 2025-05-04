@@ -19,10 +19,6 @@
 
   lease {
     remove [ find where !dynamic ]
-    {%- for lease in static_dhcp_leases %}
-    add server=dhcp-ipv4 mac-address={{ lease.mac_address }} address={{ lease.ip_address }} \
-      comment="{{ lease.comment }}"
-    {%- endfor %}
   }
 }
 
