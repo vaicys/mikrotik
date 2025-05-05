@@ -1,4 +1,3 @@
 .idea
-*.id_rsa
 secrets*
 output

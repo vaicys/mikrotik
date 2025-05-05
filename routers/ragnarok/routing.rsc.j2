@@ -32,20 +32,19 @@
 
 # IPv6 configuration
 
-:if ([:len [ /ipv6 address find where interface=bridge1 and from-pool!="" ] ] = 0) do={
   /ipv6 {
     settings set accept-router-advertisements=yes
 
     address {
-      # Duplicate Address Detection (DAD) has to be disabled on networks that contain any other
-      # Linux box with enabled routing because it responds to router advertisements, preventing
-      # Mikrotik from assigning and advertising the the prefix correctly.
-      add interface=bridge1 from-pool=pool-ipv6 advertise=yes no-dad=yes
+      remove [ find where interface=bridge1 && !dynamic ]
+      add interface=bridge1 from-pool=pool-ipv6 address=::1 advertise=yes
     }
 
     nd {
       set [ find default=yes ] interface=bridge1 \
-        managed-address-configuration=yes other-configuration=yes
+        managed-address-configuration=no other-configuration=no \
+        advertise-mac-address=yes advertise-dns=yes \
+        dns=2001:4860:4860::8888,2001:4860:4860::8844
     }
   }
 }
