@@ -18,11 +18,11 @@
 }
 
 /ip dns static {
-  remove [ find ]
+  disable [ find ]
 }
 
 /ip neighbor discovery-settings {
-  set discover-interface-list=!dynamic
+  set discover-interface-list=none
 }
 
 /ip cloud {
@@ -30,11 +30,10 @@
 }
 
 /ip service {
-  set telnet disabled=yes
-  set ftp disabled=yes
-  set api disabled=yes
-  set api-ssl disabled=yes
-  set www disabled=yes
+  set [ find where name!=ssh && name!=winbox ] disabled=yes
+
+  set ssh port=22 disabled=no
+  set winbox port=8291 disabled=no
 }
 
 /ip ssh {
