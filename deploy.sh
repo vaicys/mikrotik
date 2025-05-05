@@ -20,7 +20,6 @@ echo "Configuration uploaded, importing..."
 ssh $router import file=$router.rsc | grep -e successfully > /dev/null
 if [ $? -ne 0 ]; then
   echo "Failed importing configuration to \"$router\". See \"output.log\". Exiting."
-  popd > /dev/null
   exit
 fi
 

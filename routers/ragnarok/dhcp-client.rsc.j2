@@ -4,15 +4,6 @@
   remove [ find ]
   add interface=sfp28-2 add-default-route=yes \
     use-peer-dns=no use-peer-ntp=no
-
-  # Wait for addresses to be bound
-  {
-    :local retryCount 0
-    :while ($retryCount < 3 && [:len [find status=bound]] = 0) do={
-      :delay 1
-      :set retryCount ($retryCount + 1)
-    }
-  }
 }
 
 /ipv6 dhcp-client {
@@ -20,13 +11,4 @@
   add interface=sfp28-2 add-default-route=yes use-peer-dns=no \
     request=address,prefix \
     pool-name=pool-ipv6 pool-prefix-length=48
-
-  # Wait for addresses to be bound
-  {
-    :local retryCount 0
-    :while ($retryCount < 3 && [:len [find status=bound]] = 0) do={
-      :delay 1
-      :set retryCount ($retryCount + 1)
-    }
-  }
 }
