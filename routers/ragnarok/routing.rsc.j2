@@ -32,20 +32,19 @@
 
 # IPv6 configuration
 
-  /ipv6 {
-    settings set accept-router-advertisements=yes
+/ipv6 {
+  settings set accept-router-advertisements=yes
 
-    address {
-      remove [ find where interface=bridge1 && !dynamic ]
-      add interface=bridge1 from-pool=pool-ipv6 address=::1 advertise=yes
-    }
+  address {
+    remove [ find where interface=bridge1 && !dynamic ]
+    add interface=bridge1 from-pool=pool-ipv6 address=::1 advertise=yes
+  }
 
-    nd {
-      set [ find default=yes ] interface=bridge1 \
-        managed-address-configuration=no other-configuration=no \
-        advertise-mac-address=yes advertise-dns=yes \
-        dns=2001:4860:4860::8888,2001:4860:4860::8844
-    }
+  nd {
+    set [ find default=yes ] interface=bridge1 \
+      managed-address-configuration=no other-configuration=no \
+      advertise-mac-address=yes advertise-dns=yes \
+      dns=2001:4860:4860::8888,2001:4860:4860::8844
   }
 }
 
