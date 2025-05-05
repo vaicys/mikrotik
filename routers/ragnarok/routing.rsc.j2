@@ -33,8 +33,6 @@
 # IPv6 configuration
 
 /ipv6 {
-  settings set accept-router-advertisements=yes
-
   address {
     remove [ find where interface=bridge1 && !dynamic ]
     add interface=bridge1 from-pool=pool-ipv6 address=::1 advertise=yes
