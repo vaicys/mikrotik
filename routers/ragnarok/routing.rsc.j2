@@ -3,6 +3,7 @@
 # WAN interface
 
 /interface ethernet {
+  # IPS configuration is suggesting to try: fec-mode=fec91
   set [ find default-name=sfp-sfpplus2 ] auto-negotiation=yes fec-mode=off
 }
 
