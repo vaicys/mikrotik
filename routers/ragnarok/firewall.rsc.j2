@@ -29,6 +29,8 @@
   add chain=input in-interface-list=lan action=accept
   add chain=input protocol=icmpv6 action=accept
   add chain=input protocol=tcp dst-port=22 action=accept
+  add chain=input protocol=udp port=33434-33534 action=accept \
+    comment="UDP traceroute"
   add chain=input protocol=udp dst-port=546 src-address=fe80::/16 action=accept \
     comment="DHCPv6-Client prefix delegation"
   add chain=input action=drop
