@@ -1,19 +1,5 @@
 # Firewall
 
-/interface list {
-  remove [ find where !dynamic && !builtin ]
-
-  add name=wan
-  add name=lan
-
-  member {
-    remove [ find ]
-    add interface=sfp28-2 list=wan
-    add interface=bridge1 list=lan
-    add interface=lo list=lan
-  }
-}
-
 /ip firewall filter {
   remove [ find where !dynamic ]
 
