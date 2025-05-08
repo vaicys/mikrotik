@@ -3,8 +3,8 @@
 # WAN interface
 
 /interface ethernet {
-  # IPS configuration is suggesting to try: fec-mode=fec91
-  set [ find default-name=sfp-sfpplus2 ] auto-negotiation=yes fec-mode=off
+  # ISP configuration is suggesting to try: fec-mode=fec91
+  set [ find default-name=sfp28-2 ] auto-negotiation=yes fec-mode=off
 }
 
 # Bridging configuration
@@ -17,17 +17,39 @@
 
     port {
       remove [ find where bridge=bridge1 ]
-      add bridge=bridge1 interface=spf28-1
       add bridge=bridge1 interface=sfp-sfpplus1
+      add bridge=bridge1 interface=sfp-sfpplus2
+      add bridge=bridge1 interface=sfp-sfpplus12
     }
+  }
+}
+
+# Interface lists
+
+/interface list {
+  remove [ find where !dynamic && !builtin ]
+
+  add name=wan
+  add name=lan
+
+  member {
+    remove [ find ]
+    add interface=sfp28-2 list=wan
+    add interface=bridge1 list=lan
+    add interface=lo list=lan
   }
 }
 
 # IPv4 configuration
 
-:if ([:len [ /ip address find where interface=bridge1 ] ] = 0) do={
-  /ip address {
+/ip {
+  address {
+    remove [ find where interface=bridge1 && !dynamic ]
     add interface=bridge1 address=192.168.100.1/24
+  }
+
+  neighbor discovery-settings {
+    set discover-interface-list=lan
   }
 }
 
