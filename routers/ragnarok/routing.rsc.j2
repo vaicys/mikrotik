@@ -13,7 +13,7 @@
   /interface bridge {
     settings set use-ip-firewall=no
 
-    add name=bridge1
+    add name=bridge1 protocol-mode=none
 
     port {
       remove [ find where bridge=bridge1 ]
@@ -67,6 +67,12 @@
       advertise-mac-address=yes advertise-dns=yes \
       dns=2001:4860:4860::8888,2001:4860:4860::8844
   }
+}
+
+# Services relying on interface lists
+
+/tool mac-server {
+  mac-winbox set allowed-interface-list=lan
 }
 
 
