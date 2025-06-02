@@ -58,9 +58,12 @@
 }
 
 /tool mac-server {
+  # Telnet
   set allowed-interface-list=none
+  # Ping
   ping set enabled=no
-  mac-winbox set allowed-interface-list=all
+  # Winbox
+  mac-winbox set allowed-interface-list=none
 }
 
 /tool bandwidth-server {
