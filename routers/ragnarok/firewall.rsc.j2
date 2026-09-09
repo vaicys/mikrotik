@@ -12,7 +12,6 @@
   add chain=input connection-state=established,related action=accept
   add chain=input in-interface-list=lan action=accept
   add chain=input protocol=icmp action=accept
-  add chain=input protocol=tcp dst-port=22 action=accept
   add chain=input action=drop
 }
 
@@ -28,7 +27,8 @@
   add chain=input connection-state=established,related action=accept
   add chain=input in-interface-list=lan action=accept
   add chain=input protocol=icmpv6 action=accept
-  add chain=input protocol=tcp dst-port=22 action=accept
+  add chain=input protocol=tcp src-address=2a00:79e0:2856::/48 dst-port=22 action=accept \
+    comment="SSH from work prefix only"
   add chain=input protocol=udp dst-port=546 src-address=fe80::/16 action=accept \
     comment="DHCPv6-Client prefix delegation"
   add chain=input action=drop
