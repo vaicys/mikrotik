@@ -30,14 +30,14 @@
 }
 
 /ip service {
-  set [ find where name!=ssh && name!=winbox ] disabled=yes
+  set [ find where name~"^api" || name~"^www" || name=ftp || name=reverse-proxy ] disabled=yes
 
   set ssh port=22 disabled=no
   set winbox port=8291 disabled=no
 }
 
 /ip ssh {
-  set always-allow-password-login=no strong-crypto=yes forwarding-enabled=local
+  set password-authentication=no strong-crypto=yes forwarding-enabled=local
 }
 
 /ip socks {
