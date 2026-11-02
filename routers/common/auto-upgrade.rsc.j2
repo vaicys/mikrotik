@@ -4,7 +4,7 @@
   remove [ find name=auto-upgrade ]
   add name=auto-upgrade source=\
     "/system package update; \
-    set channel=stable; \
+    set channel=long-term; \
     check-for-updates once; \
     :delay 3s; \
     :if ([ get status ] = \"New version is available\") do={ install }"

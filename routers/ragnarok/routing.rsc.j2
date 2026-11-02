@@ -11,16 +11,20 @@
 
 :if ([:len [ /interface bridge find where name=bridge1 ] ] = 0) do={
   /interface bridge {
-    settings set use-ip-firewall=no
+    add name=bridge1
+  }
+}
 
-    add name=bridge1 protocol-mode=none
+/interface bridge {
+  settings set use-ip-firewall=no
 
-    port {
-      remove [ find where bridge=bridge1 ]
-      add bridge=bridge1 interface=sfp-sfpplus1
-      add bridge=bridge1 interface=sfp-sfpplus2
-      add bridge=bridge1 interface=sfp-sfpplus12
-    }
+  set [ find name=bridge1 ] protocol-mode=rstp igmp-snooping=no
+
+  port {
+    remove [ find where bridge=bridge1 ]
+    add bridge=bridge1 interface=sfp-sfpplus1
+    add bridge=bridge1 interface=sfp-sfpplus2
+    add bridge=bridge1 interface=sfp-sfpplus12
   }
 }
 
@@ -56,6 +60,10 @@
 # IPv6 configuration
 
 /ipv6 {
+  settings {
+    set accept-router-advertisements=yes accept-router-advertisements-on=wan
+  }
+
   address {
     remove [ find where interface=bridge1 && !dynamic ]
     add interface=bridge1 from-pool=pool-ipv6 address=::1 advertise=yes
@@ -67,6 +75,14 @@
       advertise-mac-address=yes advertise-dns=yes \
       dns=2001:4860:4860::8888,2001:4860:4860::8844
   }
+}
+
+# Set multicast defaults
+/routing igmp-proxy {
+  interface remove [find]
+  # Starting v7.25
+  # set query-interval=2m5s robustness=2
+  set query-interval=2m5s quick-leave=yes
 }
 
 # Services relying on interface lists

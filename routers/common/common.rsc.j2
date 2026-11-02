@@ -36,6 +36,10 @@
   set winbox port=8291 disabled=no
 }
 
+/ip settings {
+  set rp-filter=loose tcp-syncookies=yes
+}
+
 /ip ssh {
   set password-authentication=no strong-crypto=yes forwarding-enabled=local
 }

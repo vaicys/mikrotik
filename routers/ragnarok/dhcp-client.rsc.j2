@@ -8,7 +8,7 @@
 
 /ipv6 dhcp-client {
   remove [ find ]
-  add interface=sfp28-2 add-default-route=yes use-peer-dns=no \
-    request=address,prefix \
-    pool-name=pool-ipv6 pool-prefix-length=48
+  add interface=sfp28-2 add-default-route=no use-peer-dns=no \
+    request=prefix \
+    pool-name=pool-ipv6 pool-prefix-length=64
 }
