@@ -1,0 +1,42 @@
+# Firewall
+
+/ip firewall {
+  connection tracking set udp-timeout=29s
+
+  service-port set \
+    [ find where name!=udplite && name!=dccp && name!=sctp ] \
+    disabled=yes
+
+  filter {
+    remove [ find where !dynamic ]
+
+    add chain=forward connection-state=established,related,untracked action=accept
+    add chain=forward connection-state=invalid action=drop
+    add chain=forward action=drop
+
+    add chain=input connection-state=established,related,untracked action=accept
+    add chain=input connection-state=invalid action=drop
+    add chain=input protocol=icmp action=accept
+    add chain=input action=drop
+  }
+}
+
+/ipv6 firewall filter {
+  remove [ find where !dynamic ]
+
+  add chain=forward connection-state=established,related,untracked action=accept
+  add chain=forward connection-state=invalid action=drop
+  add chain=forward action=drop
+
+  add chain=input connection-state=established,related,untracked action=accept
+  add chain=input connection-state=invalid action=drop
+  add chain=input protocol=icmpv6 action=accept
+  add chain=input protocol=tcp src-address={{ ipv6.home_prefix }} dst-port=22,8291 action=accept \
+    comment="SSH/WinBox from home prefix"
+  add chain=input protocol=tcp src-address={{ ipv6.work_prefix }} dst-port=22 action=accept \
+    comment="SSH from work prefix"
+  add chain=input protocol=udp dst-port=546 action=accept \
+    comment="DHCPv6-Client prefix delegation"
+  add chain=input action=drop
+}
+

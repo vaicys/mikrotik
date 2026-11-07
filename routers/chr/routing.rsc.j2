@@ -1,0 +1,14 @@
+# Routing
+
+# IPv6 configuration
+
+/ipv6 {
+  settings {
+    set accept-router-advertisements=yes
+  }
+
+  address {
+    remove [ find where interface=ether1 && !dynamic ]
+    add interface=ether1 address={{ ipv6.chr_address }} advertise=no
+  }
+}

@@ -1,0 +1,11 @@
+# DHCP client
+
+/ip dhcp-client {
+  remove [ find ]
+  add interface=ether1 add-default-route=yes \
+    use-peer-dns=no use-peer-ntp=no
+}
+
+/ipv6 dhcp-client {
+  remove [ find ]
+}
