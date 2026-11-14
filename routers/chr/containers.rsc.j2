@@ -1,0 +1,63 @@
+# Alpine Linux container
+
+{%- macro file_contents(path) -%}
+{%- set content -%}{% include path %}{%- endset -%}
+"{{ ((content | trim) ~ '\n') | replace('\\', '\\\\') | replace('"', '\\"') | replace('$', '\\$') | replace('\n', '\\n') }}"
+{%- endmacro %}
+
+/container {
+  stop [ find where running ]
+  :while ([:len [ find where running || stopping ]] > 0) do={ :delay 1s }
+  remove [ find ]
+}
+
+/file {
+  remove [ find where name="containers" ]
+  add name=containers type=directory
+  add name=containers/tmp type=directory
+  add name=containers/alpine type=directory
+  add name="containers/alpine/bootstrap.sh" type=file \
+    contents={{ file_contents('chr/alpine-bootstrap.sh.j2') }}
+}
+
+/interface veth {
+  remove [ find ]
+  add name=veth-alpine \
+    address=172.17.0.2/24,fd00:17::2/64 \
+    gateway=172.17.0.1 \
+    gateway6=fd00:17::1
+}
+
+/interface bridge port {
+  remove [ find where bridge=bridge-containers || invalid ]
+  add bridge=bridge-containers interface=veth-alpine
+}
+
+/container {
+  config set registry-url=https://registry-1.docker.io tmpdir=containers/tmp
+
+  mounts {
+    remove [ find ]
+    add list=alpine-mounts src=containers/alpine dst=/mnt/persist
+  }
+
+  add name=alpine \
+    remote-image=library/alpine:latest \
+    interface=veth-alpine \
+    root-dir=containers/alpine-root \
+    mountlists=alpine-mounts \
+    dns=8.8.8.8,8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844 \
+    hostname=alpine \
+    entrypoint="/bin/sh" \
+    cmd="/mnt/persist/bootstrap.sh" \
+    start-on-boot=yes \
+    logging=yes
+
+  :while ([:len [ find where name=alpine && extracting ]] > 0) do={ :delay 1s }
+  start alpine
+}
+
+# To manually update the container image on the router:
+#   /container stop alpine
+#   /container repull alpine
+#   /container start alpine

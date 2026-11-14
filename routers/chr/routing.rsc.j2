@@ -1,14 +1,29 @@
 # Routing
 
+# Container bridge
+
+/interface bridge {
+  remove [ find where name=bridge-containers ]
+  add name=bridge-containers protocol-mode=none
+}
+
+# IPv4 configuration
+
+/ip address {
+  remove [ find where (interface=bridge-containers || invalid) && !dynamic ]
+  add interface=bridge-containers address=172.17.0.1/24
+}
+
 # IPv6 configuration
 
 /ipv6 {
   settings {
-    set accept-router-advertisements=yes
+    set forward=yes accept-router-advertisements=yes
   }
 
   address {
-    remove [ find where interface=ether1 && !dynamic ]
+    remove [ find where (interface=ether1 || interface=bridge-containers || invalid) && !dynamic ]
     add interface=ether1 address={{ ipv6.chr_address }} advertise=no
+    add interface=bridge-containers address=fd00:17::1/64 advertise=no
   }
 }

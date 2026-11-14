@@ -1,0 +1,13 @@
+# Network address translation
+
+/ip firewall nat {
+  remove [ find where !dynamic ]
+  add chain=srcnat src-address=172.17.0.0/24 out-interface=ether1 action=masquerade \
+    comment="Containers outbound IPv4 NAT"
+}
+
+/ipv6 firewall nat {
+  remove [ find where !dynamic ]
+  add chain=srcnat src-address=fd00:17::/64 out-interface=ether1 action=masquerade \
+    comment="Containers outbound IPv6 NAT"
+}

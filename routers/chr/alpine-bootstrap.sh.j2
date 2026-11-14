@@ -1,0 +1,71 @@
+#!/bin/sh
+# Fail immediately on command errors or unset variables
+set -eu
+
+# SSH server, container init, shell utilities, and network troubleshooting tools
+PKGS="openssh ca-certificates openssl tini bash tmux vim less jq curl wget bind-tools iproute2 iputils traceroute mtr tcpdump nmap netcat-openbsd iperf3 socat whois fping ethtool"
+
+# Wait for DNS and outbound TCP connectivity to Alpine's CDN (e.g. right after router boot)
+for _ in $(seq 1 30); do
+  nc -z -w 2 dl-cdn.alpinelinux.org 443 2>/dev/null && break
+  sleep 1
+done
+
+# Install packages without retaining local APK index cache
+apk add --no-cache $PKGS
+
+# Unlock root account for SSH pubkey login ('!' locks account in OpenSSH; '*' disables password login)
+sed -i 's/^root:!:/root:*:/' /etc/shadow
+# Set root's default interactive login shell to bash
+sed -i 's|^root:x:0:0:root:/root:/bin/.*|root:x:0:0:root:/root:/bin/bash|' /etc/passwd
+
+# Configure root authorized_keys with strict OpenSSH permissions
+mkdir -p /root/.ssh
+chown root:root /root /root/.ssh
+chmod 700 /root /root/.ssh
+cat > /root/.ssh/authorized_keys <<'EOF'
+{{ chr_alpine.authorized_key | trim }}
+EOF
+chown root:root /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+
+# Write persistent SSH host keys with strict permissions
+mkdir -p /etc/ssh /run/sshd
+umask 077
+cat > /etc/ssh/ssh_host_ed25519_key <<'EOF'
+{{ chr_alpine.host_ed25519_key | trim }}
+EOF
+cat > /etc/ssh/ssh_host_rsa_key <<'EOF'
+{{ chr_alpine.host_rsa_key | trim }}
+EOF
+umask 022
+cat > /etc/ssh/ssh_host_ed25519_key.pub <<'EOF'
+{{ chr_alpine.host_ed25519_pub | trim }}
+EOF
+cat > /etc/ssh/ssh_host_rsa_key.pub <<'EOF'
+{{ chr_alpine.host_rsa_pub | trim }}
+EOF
+chown root:root /etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key.pub
+chmod 600 /etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_rsa_key
+chmod 644 /etc/ssh/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_rsa_key.pub
+
+# Configure sshd on port 2222 (IPv4 + IPv6) with key-only authentication
+cat > /etc/ssh/sshd_config <<'EOF'
+Port 2222
+ListenAddress 0.0.0.0
+ListenAddress ::
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+AllowTcpForwarding yes
+X11Forwarding no
+Subsystem sftp internal-sftp
+EOF
+
+# Validate sshd configuration before starting
+/usr/sbin/sshd -t
+# Run tini as PID 1 (signal forwarding & zombie reaping) with sshd in foreground logging to stderr
+exec /sbin/tini -- /usr/sbin/sshd -D -e

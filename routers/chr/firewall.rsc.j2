@@ -12,6 +12,8 @@
 
     add chain=forward connection-state=established,related,untracked action=accept
     add chain=forward connection-state=invalid action=drop
+    add chain=forward in-interface=bridge-containers out-interface=ether1 action=accept \
+      comment="Containers outbound IPv4"
     add chain=forward action=drop
 
     add chain=input connection-state=established,related,untracked action=accept
@@ -26,6 +28,8 @@
 
   add chain=forward connection-state=established,related,untracked action=accept
   add chain=forward connection-state=invalid action=drop
+  add chain=forward in-interface=bridge-containers out-interface=ether1 action=accept \
+    comment="Containers outbound IPv6"
   add chain=forward action=drop
 
   add chain=input connection-state=established,related,untracked action=accept
